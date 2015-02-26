@@ -1,4 +1,4 @@
-## Synopsis
+## PageHandler
 
 Invokes https://github.com/Darfk/page to render HTML pages in response to requests routed by https://github.com/gorilla/mux
 

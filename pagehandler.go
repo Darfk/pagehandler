@@ -1,12 +1,12 @@
 package pagehandler
 
 import (
-	"net/http"
 	"github.com/darfk/page"
-	"github.com/gorilla/mux"
+	"net/http"
+	"path"
 )
 
-type PageHandler struct {}
+type PageHandler struct{}
 
 func (ph PageHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 
@@ -21,19 +21,20 @@ func (ph PageHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 		templateFile = templateFiles[0]
 	}
 
-	vars := mux.Vars(req)
-
-	pageFile, exists := vars["page"]
-
-	if ! exists {
-		pageFile = "index"
+	var pageFile string
+	{
+		var matched bool
+		if matched, _ = path.Match("/", req.URL.Path); matched {
+			pageFile = "index"
+		} else if matched, _ = path.Match("/*", req.URL.Path); matched {
+			pageFile = path.Base(req.URL.Path)
+		} else {
+			http.NotFound(res, req)
+			return
+		}
 	}
 
-	if len(pageFile) == 0 {
-		pageFile = "index"
-	}
-
-	p:= page.NewPage()
+	p := page.NewPage()
 
 	var err error
 	err = p.LoadBody(pageFile)
@@ -58,6 +59,5 @@ func (ph PageHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	}
 
 	return
-	
-}
 
+}

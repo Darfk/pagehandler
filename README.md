@@ -1,6 +1,6 @@
 ## PageHandler
 
-Invokes https://github.com/Darfk/page to render HTML pages in response to requests routed by https://github.com/gorilla/mux
+Invokes https://github.com/Darfk/page to render HTML pages
 
 ## Installation
 
@@ -13,15 +13,16 @@ Invokes https://github.com/Darfk/page to render HTML pages in response to reques
     package main
 
     import (
-        "github.com/gorilla/mux"
         "github.com/darfk/pagehandler"
         "net/http"
     )
 
     func main() {
-        r := mux.NewRouter()
-        r.Handle("/{page:([a-z]+)?}", &pagehandler.PageHandler{})
-        http.Handle("/", r)
+		mux := http.NewServeMux()
+		mux.Handle("/", &pagehandler.PageHandler{})
+		server := &http.Server{}
+		server.Handler = mux
+		server.ListenAndServe()
     }
 
 
